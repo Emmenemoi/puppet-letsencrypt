@@ -51,7 +51,7 @@ define letsencrypt::exec::webroot (
       command => "letsencrypt certonly -a webroot --webroot-path ${real_webroot} -d ${params_domain} --renew-by-default --server ${server}",
       creates => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem",
       require  => File['/etc/letsencrypt/cli.ini'],
-      path     => ['/usr/local/bin']
+      path     => ['/usr/local/bin', '/usr/bin', '/bin', '/sbin']
     }
   }
 }
