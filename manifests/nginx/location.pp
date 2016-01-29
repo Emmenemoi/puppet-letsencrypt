@@ -23,6 +23,7 @@ define letsencrypt::nginx::location(
       location =>  '/.well-known/acme-challenge',
       www_root =>  $letsencrypt::webroot,
       ssl      =>  $real_vhost_ssl,
+      auth_basic => 'off',
     }
   }
 }

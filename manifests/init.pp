@@ -99,5 +99,5 @@ class letsencrypt(
   create_resources('letsencrypt::nginx::location',  $nginx_locations)
   create_resources('letsencrypt::nginx::vhost',     $nginx_vhosts)
   create_resources('letsencrypt::exec::webroot',    $exec_webroot)
-  create_resources('letsencrypt::exec::standalone', $exec_standalone)
+  create_resources('letsencrypt::exec::standalone', $exec_standalone)  
 }
