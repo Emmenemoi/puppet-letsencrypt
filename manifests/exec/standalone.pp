@@ -8,7 +8,7 @@ define letsencrypt::exec::standalone (
   validate_string($server)
 
   $params_domain = join($domains, ' -d ')
-  if !letsencrypt_installed($name, $domains) {
+  unless letsencrypt_installed($name, $domains) {
     exec{ "letsencrypt-exec-standalone-${name}":
       command  => "letsencrypt certonly -a standalone -d ${params_domain} --renew-by-default --standalone-supported-challenges tls-sni-01 --server ${server}",
       creates  => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem",
