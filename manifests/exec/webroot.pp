@@ -13,7 +13,7 @@ define letsencrypt::exec::webroot (
 
   $params_domain = join($domains, ' -d ')
 
-  unless letsencrypt_installed( $name , $domains) {
+  unless letsencrypt_installed( $domains) {
     if $letsencrypt::firstrun_standalone and $::letsencrypt_firstrun != 'SUCCESS' {
       letsencrypt::exec::standalone{ $name:
         domains => $domains,
