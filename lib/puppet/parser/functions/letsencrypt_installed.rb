@@ -32,9 +32,10 @@ This function checks if the provided vhost has valid SSL certificate installed.
         raise(Puppet::ParseError, "letsencrypt_installed_domains: this fact must be a Hash. Be sure to setup 'stringify_facts = false' in [main] section of puppet configs") unless installed.is_a? (Hash)
     	vhosttested = installed[vhost]
 
-        unless vhosttested.nil?
-        	vhostincluded = vhosttested & aliasdomains
-        	if vhostincluded.size == installed[vhost].size
+        unless vhosttested.nil? and vhosttested.size > 0
+        	vhostactive = vhosttested & aliasdomains
+            #raise(Puppet::ParseError, "vhostactive="+vhostactive.join(",")+" // aliasdomains="+aliasdomains.join(',') )
+        	if vhostactive.size == aliasdomains.size
         		return true
         	end
         end
