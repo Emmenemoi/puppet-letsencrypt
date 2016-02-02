@@ -9,7 +9,7 @@ define letsencrypt::exec::webroot (
   validate_array($domains)
   validate_string($server)
   validate_string($webroot)
-  validate_boolean($force_renew)
+  validate_bool($force_renew)
 
   $params_domain = join($domains, ' -d ')
 

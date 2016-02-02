@@ -7,7 +7,7 @@ define letsencrypt::exec::standalone (
   include letsencrypt
   validate_array($domains)
   validate_string($server)
-  validate_boolean($force_renew)
+  validate_bool($force_renew)
 
   $params_domain = join($domains, ' -d ')
   unless letsencrypt_installed($name, $domains) {
