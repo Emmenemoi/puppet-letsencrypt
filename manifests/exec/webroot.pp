@@ -56,6 +56,8 @@ define letsencrypt::exec::webroot (
       } else {
         $renew_option = "--keep-until-expiring"
       }
+
+      #notify {"/etc/letsencrypt/live/${domains[0]}/fullchain.pem":}
       exec{ "letsencrypt-exec-webroot-${name}":
         command => "letsencrypt certonly -a webroot --webroot-path ${real_webroot} -d ${params_domain} ${renew_option} --server ${server}",
         creates => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem",
