@@ -3,11 +3,13 @@ define letsencrypt::exec::webroot (
   $domains = [$name],
   $webroot = $letsencrypt::webroot,
   $server  = $letsencrypt::server,
+  $force_renew = $letsencrypt::force_renew,
 ){
   include letsencrypt
   validate_array($domains)
   validate_string($server)
   validate_string($webroot)
+  validate_boolean($force_renew)
 
   $params_domain = join($domains, ' -d ')
 
@@ -49,9 +51,13 @@ define letsencrypt::exec::webroot (
         $real_webroot = $webroot
       }
 
-      
+      if $force_renew {
+        $renew_option = "--renew-by-default"
+      } else {
+        $renew_option = "--keep-until-expiring"
+      }
       exec{ "letsencrypt-exec-webroot-${name}":
-        command => "letsencrypt certonly -a webroot --webroot-path ${real_webroot} -d ${params_domain} --renew-by-default --server ${server}",
+        command => "letsencrypt certonly -a webroot --webroot-path ${real_webroot} -d ${params_domain} ${renew_option} --server ${server}",
         creates => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem",
         require  => File['/etc/letsencrypt/cli.ini'],
         path     => ['/usr/local/bin', '/usr/bin', '/bin', '/sbin']

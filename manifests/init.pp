@@ -67,6 +67,7 @@ class letsencrypt(
   $firstrun_webroot    = undef, # For Debian & Nginx: /usr/share/nginx/html
   $firstrun_standalone = false,
   $rsa_key_size        = '2048',
+  $force_renew         = false,
   $work_dir            = '/var/lib/letsencrypt',
   $logs_dir            = '/var/log/letsencrypt',
   $nginx_locations     = {},
