@@ -17,22 +17,22 @@ This function checks if the provided vhost has valid SSL certificate installed.
 
     	raise(Puppet::ParseError, "letsencrypt_installed(): Wrong number of arguments given (#{arguments.size} for 2)") if args.size != 2
     	vhost = args[0]
-    	alias_domains = args[1]
+    	aliasdomains = args[1]
     	result = false
 
     	raise(Puppet::ParseError, "letsencrypt_installed(): First argument must be a String") unless vhost.is_a? (String)
-    	raise(Puppet::ParseError, "letsencrypt_installed(): Second argument must be an Array") unless alias_domains.is_a? (Array)
-        raise(Puppet::ParseError,"args: "+vhost+" / "+alias_domains.join(","))
+    	raise(Puppet::ParseError, "letsencrypt_installed(): Second argument must be an Array") unless aliasdomains.is_a? (Array)
 
     	installed = lookupvar('letsencrypt_installed_domains')
-    	vhost_tested = installed[vhost]
+        raise(Puppet::ParseError, "letsencrypt_installed_domains: this fact must be an Array. Be sure to setup 'stringify_facts = false' in [main] section of puppet configs") unless installed.is_a? (Array)
+    	vhosttested = installed[vhost]
 
-    	vhost_included = vhost_tested & alias_domains
-    	if vhost_included.size == installed[vhost].size
-
-    		return true
-    	else
-    		return false
-    	end
+        unless vhosttested.nil?
+        	vhostincluded = vhosttested & aliasdomains
+        	if vhostincluded.size == installed[vhost].size
+        		return true
+        	end
+        end
+        return false
     end
 end

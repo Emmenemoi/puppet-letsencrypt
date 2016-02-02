@@ -31,6 +31,10 @@ automatically added to the ngninx vhost so that the challenge path is using
 the letsencrypt webroot.
 This allows to solve the challenge even if the vhost is just a proxy to another server.
 
+## Requirements
+
+To be able to load facts (installed certificates), "stringify_facts = false" shall be configured in the [main] section of both the agents and master.
+
 ## Setup
 
 ### What letsencrypt affects

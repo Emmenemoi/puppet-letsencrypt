@@ -8,13 +8,16 @@ Facter.add(:letsencrypt_installed_domains) do
         Dir.glob('/etc/letsencrypt/live/*/fullchain.pem') do |pem_file|
         	require "time"
 
-        	vhost = `openssl x509 -noout -subject -in #{pem_file}`.gsub("Subject: CN=", '')
+        	#vhost = `openssl x509 -noout -subject -in #{pem_file}`.downcase.gsub("\n", '').gsub("subject= /cn=", '')
+            # vhost is the name of the parent cert folder.
+            vhost = pem_file.downcase.gsub(/.*\/live\/(.+?)\/fullchain.*/, '\1')
         	dates = `openssl x509 -dates -noout < #{pem_file}`.gsub("\n", '')
         	raise "No date found in certificate" unless dates.match(/not(Before|After)=/)
         	certbegin = Time.parse(dates.gsub(/.*notBefore=(.+? GMT).*/, '\1'))
 	        certend   = Time.parse(dates.gsub(/.*notAfter=(.+? GMT).*/, '\1'))
 	        now       = Time.now
 
+            letsencrypt_installed_domains[vhost] = []
 	        if (now > certend)
 	            # certificate is expired
 	        elsif (now < certbegin)
@@ -22,8 +25,9 @@ Facter.add(:letsencrypt_installed_domains) do
 	        elsif (certend <= certbegin)
 	            # certificate will never be valid
 	        else
-	            # return number of seconds certificate is still valid for
-          		letsencrypt_installed_domains[vhost] = `openssl x509 -noout -text -in #{pem_file} | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:"`.gsub("\n", '').split(',')
+	            # certificate is still valid
+                installed_domains = `openssl x509 -noout -text -in #{pem_file} | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:"`.gsub("\n", '').downcase
+                letsencrypt_installed_domains[vhost] = installed_domains.split(',')
 	        end
         end
         letsencrypt_installed_domains
