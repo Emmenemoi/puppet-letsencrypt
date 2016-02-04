@@ -12,13 +12,13 @@ Facter.add(:letsencrypt_installed_domains) do
             # vhost is the name of the parent cert folder.
             vhost = pem_file.downcase.gsub(/.*\/live\/(.+?)\/fullchain.*/, '\1')
         	dates = `openssl x509 -dates -noout < #{pem_file}`.gsub("\n", '')
-            issuer = `openssl x509 -noout -issuer -in #{pem_file}`.downcase.gsub("\n", '').gsub("issuer= /cn=", '')
+            certissuer = `openssl x509 -noout -issuer < #{pem_file}`.downcase.gsub("\n", '').gsub("issuer= /cn=", '')
         	raise "No date found in certificate" unless dates.match(/not(Before|After)=/)
         	certbegin = Time.parse(dates.gsub(/.*notBefore=(.+? GMT).*/, '\1'))
 	        certend   = Time.parse(dates.gsub(/.*notAfter=(.+? GMT).*/, '\1'))
 	        now       = Time.now
 
-            letsencrypt_installed_domains[vhost] = []
+            letsencrypt_installed_domains[vhost] = {}
 	        if (now > certend)
 	            # certificate is expired
 	        elsif (now < certbegin)
@@ -28,12 +28,12 @@ Facter.add(:letsencrypt_installed_domains) do
 	        else
 	            # certificate is still valid
                 installed_domains = `openssl x509 -noout -text -in #{pem_file} | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:"`.gsub("\n", '').downcase
-                if issuer.include? "fake"
-                    letsencrypt_installed_domains[vhost]["type"] = "staging"
+                letsencrypt_installed_domains[vhost]['domains'] = installed_domains.split(',')
+                if certissuer.include?('fake')
+                    letsencrypt_installed_domains[vhost]['type'] = 'staging'
                 else
-                    letsencrypt_installed_domains[vhost]["type"] = "production"
+                    letsencrypt_installed_domains[vhost]['type'] = 'production'
                 end
-                letsencrypt_installed_domains[vhost]["domains"] = installed_domains.split(',')
 	        end
         end
         letsencrypt_installed_domains
