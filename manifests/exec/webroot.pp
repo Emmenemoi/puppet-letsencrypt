@@ -13,7 +13,13 @@ define letsencrypt::exec::webroot (
 
   $params_domain = join($domains, ' -d ')
 
-  unless letsencrypt_installed( $domains) {
+  if $server ~= /staging/ {
+    $staging = true
+  } else {
+    $staging = false
+  }
+
+  unless letsencrypt_installed( $domains, $staging) {
     if $letsencrypt::firstrun_standalone and $::letsencrypt_firstrun != 'SUCCESS' {
       letsencrypt::exec::standalone{ $name:
         domains => $domains,

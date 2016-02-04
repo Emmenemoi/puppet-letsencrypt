@@ -10,7 +10,13 @@ define letsencrypt::exec::standalone (
   validate_bool($force_renew)
 
   $params_domain = join($domains, ' -d ')
-  unless letsencrypt_installed($domains) {
+  if $server ~= /staging/ {
+    $staging = true
+  } else {
+    $staging = false
+  }
+
+  unless letsencrypt_installed($domains, $staging) {
     if $force_renew {
       $renew_option = "--renew-by-default"
     } else {

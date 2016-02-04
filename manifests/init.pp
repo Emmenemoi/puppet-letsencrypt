@@ -79,6 +79,12 @@ class letsencrypt(
 
   unless $agree_tos { fail('letsencrypt: Please read the Terms of Service at https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf. You must agree in order to register with the ACME server at https://acme-v01.api.letsencrypt.org/directory') }
 
+  if $server ~= /staging/ {
+    $staging = true
+  } else {
+    $staging = false
+  }
+  
   file{ [
       '/etc/letsencrypt',
       '/var/lib/letsencrypt',
