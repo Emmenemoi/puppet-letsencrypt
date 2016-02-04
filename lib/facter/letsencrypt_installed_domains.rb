@@ -28,7 +28,7 @@ Facter.add(:letsencrypt_installed_domains) do
 	        else
 	            # certificate is still valid
                 installed_domains = `openssl x509 -noout -text -in #{pem_file} | awk '/X509v3 Subject Alternative Name/ {getline;gsub(/ /, "", $0); print}' | tr -d "DNS:"`.gsub("\n", '').downcase
-                if my_string.include? "fake"
+                if issuer.include? "fake"
                     letsencrypt_installed_domains[vhost]["type"] = "staging"
                 else
                     letsencrypt_installed_domains[vhost]["type"] = "production"

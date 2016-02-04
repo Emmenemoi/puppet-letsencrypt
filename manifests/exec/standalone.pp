@@ -10,7 +10,7 @@ define letsencrypt::exec::standalone (
   validate_bool($force_renew)
 
   $params_domain = join($domains, ' -d ')
-  if $server ~= /staging/ {
+  if $server =~ /staging/ {
     $staging = true
   } else {
     $staging = false

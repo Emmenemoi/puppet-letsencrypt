@@ -21,11 +21,11 @@ This function checks if the provided vhost has valid SSL certificate installed.
             raise(Puppet::ParseError, "letsencrypt_installed(): If 1 argument it must be an Array") unless args[0].is_a? (Array)
             aliasdomains = args[0]
             vhost = aliasdomains[0]
-        elsif args.size == 2 and args[1].is_a? (Boolean)
+        elsif args.size == 2 and ( args[1].is_a?(TrueClass) || args[1].is_a?(FalseClass) )
             raise(Puppet::ParseError, "letsencrypt_installed(): If 1 argument it must be an Array") unless args[0].is_a? (Array)
             aliasdomains = args[0]
             vhost = aliasdomains[0]
-            canbestaging = args[1]
+            canbestaging = args[1].is_a?(TrueClass)
         elsif args.size == 2
             raise(Puppet::ParseError, "letsencrypt_installed(): First argument must be a String") unless args[0].is_a? (String)
             raise(Puppet::ParseError, "letsencrypt_installed(): Second argument must be an Array") unless args[1].is_a? (Array)
@@ -34,20 +34,20 @@ This function checks if the provided vhost has valid SSL certificate installed.
         elsif args.size == 3
             raise(Puppet::ParseError, "letsencrypt_installed(): First argument must be a String") unless args[0].is_a? (String)
             raise(Puppet::ParseError, "letsencrypt_installed(): Second argument must be an Array") unless args[1].is_a? (Array)
-            raise(Puppet::ParseError, "letsencrypt_installed(): Last argument must be a Boolean") unless args[2].is_a? (Boolean)
+            raise(Puppet::ParseError, "letsencrypt_installed(): Last argument must be a Boolean") unless ( args[2].is_a?(TrueClass) || args[2].is_a?(FalseClass) )
             vhost = args[0]
             aliasdomains = args[1]
-            canbestaging = args[2]
+            canbestaging = args[2].is_a?(TrueClass)
     	else
             raise(Puppet::ParseError, "letsencrypt_installed(): Wrong number of arguments given (#{args.size} for 1 or 2 with optional extra boolean param)")
         end
 
-    	installed = lookupvar('letsencrypt_installed_domains')
+    	installed = lookupvar('letsencrypt_installed_domains')        
         raise(Puppet::ParseError, "letsencrypt_installed_domains: this fact must be a Hash. Be sure to setup 'stringify_facts = false' in [main] section of puppet configs") unless installed.is_a? (Hash)
     	vhosttested = installed[vhost]
 
-        unless vhosttested.nil? and vhosttested['domains'].nil? and vhosttested['domains'].size > 0
-            if !canbestaging and vhosttested['domains'] == "staging"
+        unless vhosttested.nil? or vhosttested['domains'].nil? or vhosttested['domains'].size == 0
+            if canbestaging == false and vhosttested['type'] == "staging"
                 return false
             end
         	vhostactive = vhosttested['domains'] & aliasdomains
