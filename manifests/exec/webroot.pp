@@ -66,7 +66,6 @@ define letsencrypt::exec::webroot (
       #notify {"/etc/letsencrypt/live/${domains[0]}/fullchain.pem":}
       exec{ "letsencrypt-exec-webroot-${name}":
         command => "letsencrypt certonly -a webroot --webroot-path ${real_webroot} -d ${params_domain} ${renew_option} --expand --server ${server}",
-        #creates => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem",
         require  => File['/etc/letsencrypt/cli.ini'],
         path     => ['/usr/local/bin', '/usr/bin', '/bin', '/sbin'],
         notify   => Service["nginx"]

@@ -25,7 +25,6 @@ define letsencrypt::exec::standalone (
 
     exec{ "letsencrypt-exec-standalone-${name}":
       command  => "letsencrypt certonly -a standalone -d ${params_domain} ${renew_option} --expand --standalone-supported-challenges tls-sni-01 --server ${server}",
-      creates  => "/etc/letsencrypt/live/${domains[0]}/fullchain.pem",
       require  => File['/etc/letsencrypt/cli.ini'],
       path     => ['/usr/local/bin', '/usr/bin', '/bin', '/sbin']
     }
